@@ -115,7 +115,7 @@ router.get('/favorites/:id', (req, res, next) => {
         });
 });
 
-router.get('/all-favorites', (req, res, next) => {
+router.get('/all-favorites', (req, res) => {
 
     pool.execute(
         `SELECT f.id, f.entite_id, s.nom, t.libele as type, s.description, s.image, 
@@ -157,7 +157,7 @@ router.get('/reviews/:id', (req, res, next) => {
         });
 });
 
-router.get('/all-reviews', (req, res, next) => {
+router.get('/all-reviews', (req, res) => {
 
     pool.execute(
         `SELECT a.id_avis, a.id_site, a.commentaire, a.note, a.date_avis, a.source, 
