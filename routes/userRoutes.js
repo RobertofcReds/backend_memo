@@ -15,6 +15,45 @@ router.get('/regions', (req, res, next) => {
         });
 });
 
+router.get('/all-favorites', (req, res) => {
+    console.log("get favorites")
+    pool.execute(
+        `SELECT f.id, f.entite_id, s.nom, t.libele as type, s.description, s.image, 
+                s.id_region, r.nom as nom_region, s.cout_estime, s.latitude, s.longitude, s.duree_visite
+         FROM favoris f
+         JOIN sites s ON f.entite_id = s.id_site 
+         LEFT JOIN type t ON s.id_type = t.id_type
+         LEFT JOIN regions r ON s.id_region = r.id_region
+         WHERE f.entite_type = 'site'`
+    )
+        .then(([rows]) => {
+            res.json(rows);
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            res.status(500).json({ message: 'Erreur serveur' });
+        });
+});
+
+
+router.get('/all-reviews', (req, res) => {
+
+    pool.execute(
+        `SELECT a.id_avis, a.id_site, a.commentaire, a.note, a.date_avis, a.source, 
+                s.nom as site_nom, s.image 
+         FROM avis a 
+         LEFT JOIN sites s on a.id_site = s.id_site`
+    )
+        .then(([rows]) => {
+            console.log('📝 Avis récupérés:', rows);
+            res.json(rows);
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            res.status(500).json({ message: 'Erreur serveur' });
+        });
+});
+
 // Récupérer les données utilisateur
 router.get('/:id', (req, res, next) => {
     const { id } = req.params;
@@ -115,25 +154,7 @@ router.get('/favorites/:id', (req, res, next) => {
         });
 });
 
-router.get('/all-favorites', (req, res) => {
 
-    pool.execute(
-        `SELECT f.id, f.entite_id, s.nom, t.libele as type, s.description, s.image, 
-                s.id_region, r.nom as nom_region, s.cout_estime, s.latitude, s.longitude, s.duree_visite
-         FROM favoris f
-         JOIN sites s ON f.entite_id = s.id_site 
-         LEFT JOIN type t ON s.id_type = t.id_type
-         LEFT JOIN regions r ON s.id_region = r.id_region
-         WHERE f.entite_type = 'site'`
-    )
-        .then(([rows]) => {
-            res.json(rows);
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-            res.status(500).json({ message: 'Erreur serveur' });
-        });
-});
 
 // Récupérer les avis - MODIFIÉ POUR INCLURE id_site ET NOTE
 router.get('/reviews/:id', (req, res, next) => {
@@ -157,23 +178,6 @@ router.get('/reviews/:id', (req, res, next) => {
         });
 });
 
-router.get('/all-reviews', (req, res) => {
-
-    pool.execute(
-        `SELECT a.id_avis, a.id_site, a.commentaire, a.note, a.date_avis, a.source, 
-                s.nom as site_nom, s.image 
-         FROM avis a 
-         LEFT JOIN sites s on a.id_site = s.id_site`
-    )
-        .then(([rows]) => {
-            console.log('📝 Avis récupérés:', rows);
-            res.json(rows);
-        })
-        .catch(error => {
-            console.error('Erreur:', error);
-            res.status(500).json({ message: 'Erreur serveur' });
-        });
-});
 
 // Récupérer les avis - MODIFIÉ POUR INCLURE id_site ET NOTE
 router.get('/popular/:id', (req, res, next) => {
