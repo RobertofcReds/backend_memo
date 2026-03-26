@@ -31,7 +31,7 @@ const register = async (req, res) => {
     res.status(201).json({ message: 'Utilisateur créé avec succès' });
   } catch (error) {
     if (error.code === 'ER_DUP_ENTRY') {
-      return res.status(400).json({ message: 'Cet email est déjà utilisé' });
+      return res.status(400).json({ message: 'Cet email est déjà utilisé', error: error.message });
     }
     console.error('Erreur register:', error);
     res.status(500).json({ message: 'Erreur serveur' });
